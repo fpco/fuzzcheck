@@ -109,7 +109,7 @@ from the smoke tests for this library:
 
 Although this library was written before I had found
 [this paper](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.118.9528)
-and `Test.QuickCheck.Monadic`, the results are rather similar (the paper uses
-`name` instead of `?>`, but `arg` is the same):
+and `Test.QuickCheck.Monadic`, the results are somewhat similar (the paper
+uses `name` instead of `?>`, while `arg` is the same).
 
     
