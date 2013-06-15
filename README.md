@@ -29,7 +29,7 @@ simple FFI code:
 ## FuzzCheck interface
 
 There are just three special details introduced by FuzzCheck, the `?>`
-operator, and the `arg` and `gen` combinators.
+operator, and the `arg`, `rand` and `gen` combinators.
 
     "label" ?> action
     
@@ -44,6 +44,11 @@ equivalent to using `f x` in the surrounding monad, except that if an
 exception is generated, the error report looks like this:
 
     f "Hello": <text of actual exception here>
+
+You may also use `rand`, which is just a shorter synonym for QuickCheck's
+`arbitrary`, for generating a type-appropriate random value automatically:
+
+    "label" ?> f <$> rand
 
 Another option is to use `gen`, which takes for its argument any combinator
 from QuickCheck that generates an appropriately typed `Gen` value.  For
@@ -99,3 +104,11 @@ from the smoke tests for this library:
         x <- "peek at memory" ?> peek <$> arg mem
         x @?= n
         free mem
+
+## See also
+
+Although this library was written before I had found the following paper and
+`Test.QuickCheck.Monadic`, the results are rather similar (the paper uses
+`name` instead of `?>`, but `arg` is the same):
+
+    http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.118.9528
