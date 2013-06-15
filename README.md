@@ -107,8 +107,9 @@ from the smoke tests for this library:
 
 ## See also
 
-Although this library was written before I had found the following paper and
-`Test.QuickCheck.Monadic`, the results are rather similar (the paper uses
+Although this library was written before I had found
+[this paper](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.118.9528)
+and `Test.QuickCheck.Monadic`, the results are rather similar (the paper uses
 `name` instead of `?>`, but `arg` is the same):
 
-    http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.118.9528
+    
