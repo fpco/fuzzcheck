@@ -29,6 +29,14 @@ main = hspec $ do
         x @?= n
         free mem
 
+    it "works with an FFI example using rand" $ fuzzCheck $ do
+        mem <- malloc
+        n <- "pick a number"  ?> return <$> (rand :: Fuzz Int)
+        "poke"               ?> poke <$> arg mem <*> arg n
+        x <- "peek at memory" ?> peek <$> arg mem
+        x @?= n
+        free mem
+
   where
     myExample :: Int -> IO Int
     myExample x = if x `mod` 3 == 0

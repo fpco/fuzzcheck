@@ -5,7 +5,16 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Test.FuzzCheck where
+module Test.FuzzCheck
+       ( Fuzz(..)
+       , FuzzException(..)
+       , arg
+       , gen
+       , rand
+       , (?>)
+       , fuzzCheck'
+       , fuzzCheck
+       ) where
 
 import Control.Applicative
 import Control.Exception.Lifted
@@ -29,22 +38,21 @@ instance Applicative Fuzz where
     pure x = Fuzz (Compose (pure (Pair (Const ["<arg>"]) (Identity x))))
     Fuzz f <*> Fuzz x = Fuzz (f <*> x)
 
-arg :: Show a => a -> Fuzz a
-arg x = Fuzz (Compose (pure (Pair (Const [show x]) (Identity x))))
-
-gen :: Show a => Gen a -> Fuzz a
-gen (MkGen m) = Fuzz (Compose (MkGen g))
-  where g r n = let x = m r n in Pair (Const [show x]) (Identity x)
-
 data FuzzException = FuzzException String deriving (Eq, Show, Typeable)
 instance Exception FuzzException
 
-runFuzz :: (MonadIO m, MonadBaseControl IO m)
-        => String -> [String] -> m a -> m a
-runFuzz lbl args m = m `catch` report
-  where report e = throwIO (FuzzException $
-                            lbl ++ " " ++ unwords (map show args)
-                                ++ ": " ++ show (e :: SomeException))
+wrap :: Show a => a -> Product (Const [String]) Identity a
+wrap x = Pair (Const [show x]) (Identity x)
+
+arg :: Show a => a -> Fuzz a
+arg = Fuzz . Compose . pure . wrap
+
+gen :: Show a => Gen a -> Fuzz a
+gen (MkGen m) = Fuzz (Compose (MkGen g))
+  where g r n = let x = m r n in wrap x
+
+rand :: (Arbitrary a, Show a) => Fuzz a
+rand = gen arbitrary
 
 infixr 1 ?>
 (?>) :: (MonadIO m, MonadBaseControl IO m)
@@ -52,7 +60,14 @@ infixr 1 ?>
 lbl ?> Fuzz (Compose (MkGen g)) = do
     rnd <- liftIO newStdGen
     let Pair (Const args) (Identity x) = g rnd 100
-    runFuzz lbl args x
+    runFuzz args x
+  where
+    runFuzz :: (MonadIO m, MonadBaseControl IO m)
+            => [String] -> m a -> m a
+    runFuzz args m = m `catch` report
+      where report e = throwIO (FuzzException $
+                                lbl ++ " " ++ unwords (map show args)
+                                    ++ ": " ++ show (e :: SomeException))
 
 fuzzCheck' :: (MonadIO m, MonadBaseControl IO m)
            => m a -> Int -> m () -> m ()
