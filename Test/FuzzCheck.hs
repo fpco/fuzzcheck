@@ -11,6 +11,7 @@ module Test.FuzzCheck
        , arg
        , gen
        , rand
+       , branch
        , (?>)
        , fuzzCheck'
        , fuzzCheck
@@ -53,6 +54,13 @@ gen (MkGen m) = Fuzz (Compose (MkGen g))
 
 rand :: (Arbitrary a, Show a) => Fuzz a
 rand = gen arbitrary
+
+branch :: (MonadIO m, MonadBaseControl IO m) => [m a] -> m a
+branch xs = do
+    let len = length xs
+    n <- "pick a random number"
+             ?> return <$> gen (choose (0,len-1) :: Gen Int)
+    xs !! n
 
 infixr 1 ?>
 (?>) :: (MonadIO m, MonadBaseControl IO m)
