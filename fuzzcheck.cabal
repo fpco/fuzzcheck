@@ -1,5 +1,5 @@
 Name:                 fuzzcheck
-Version:              0.1.0
+Version:              0.1.1
                       
 Synopsis:             A simple checker for stress testing monadic code
 Description:          A simple checker for stress testing monadic code
