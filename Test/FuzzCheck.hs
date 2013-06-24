@@ -12,6 +12,7 @@ module Test.FuzzCheck
        , gen
        , rand
        , branch
+       , jumble
        , (?>)
        , fuzzCheck'
        , fuzzCheck
@@ -61,6 +62,16 @@ branch xs = do
     n <- "pick a random number"
              ?> return <$> gen (choose (0,len-1) :: Gen Int)
     xs !! n
+
+jumble :: (MonadIO m, MonadBaseControl IO m) => [m a] -> m [a]
+jumble xs = do
+    let len = length xs
+    xs' <- sequence xs
+    foldM (\acc _x -> do
+                n <- "pick a random number"
+                         ?> return <$> gen (choose (1,len-1) :: Gen Int)
+                let (y:ys, z:zs) = splitAt n acc
+                return $ (z:ys) ++ (y:zs)) xs' xs'
 
 infixr 1 ?>
 (?>) :: (MonadIO m, MonadBaseControl IO m)
