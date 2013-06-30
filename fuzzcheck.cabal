@@ -36,9 +36,13 @@ Library
     Ghc-options:      -Wall
     Default-language: Haskell2010
     Exposed-modules:  Test.FuzzCheck
+                      Test.FuzzCheck.Pool
     Build-depends:    base
                     , monad-control
                     , lifted-base
                     , transformers
                     , random
                     , QuickCheck
+                    , vector
+                    , containers
+                    , ghc-prim
