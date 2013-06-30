@@ -45,4 +45,5 @@ main = hspec $ do
 
     err = "FuzzException \"qc1 \\\"3\\\": user error (x divisible by three!)\""
 
-    fuzzCheckFAIL msg f = f `shouldThrow` \(e :: FuzzException) -> show e == msg
+    fuzzCheckFAIL msg f = fuzzCheck f `shouldThrow`
+        \(e :: FuzzException) -> show e == msg
