@@ -29,8 +29,8 @@ import Data.Functor.Product
 import Data.List
 import Data.Typeable
 import Prelude hiding (catch, ioError)
-import System.Random
 import Test.QuickCheck
+import Test.QuickCheck.Random (newQCGen)
 import Test.QuickCheck.Gen (Gen(..))
 
 newtype Fuzz a = Fuzz (Compose Gen (Product (Const [String]) Identity) a)
@@ -77,7 +77,7 @@ infixr 1 ?>
 (?>) :: (MonadIO m, MonadBaseControl IO m)
      => String -> Fuzz (m a) -> m a
 lbl ?> Fuzz (Compose (MkGen g)) = do
-    rnd <- liftIO newStdGen
+    rnd <- liftIO newQCGen
     let Pair (Const args) (Identity x) = g rnd 100
     runFuzz args x
   where
