@@ -5,7 +5,7 @@ Synopsis:             A simple checker for stress testing monadic code
 Description:          A simple checker for stress testing monadic code
                       
 Homepage:             https://github.com/fpco/fuzzcheck
-License:              BSD3
+License:              MIT
 License-file:         LICENSE
 Author:               John Wiegley
 Maintainer:           John Wiegley <johnw@fpcomplete.com>
